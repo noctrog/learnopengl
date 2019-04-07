@@ -1,0 +1,31 @@
+[
+    {
+        "arguments": [
+            "gcc",
+            "-c",
+            "-Iinclude",
+            "-Iinclude/glad",
+            "-Iinclude/KHR",
+            "-o",
+            "obj/glad.o",
+            "src/glad.c"
+        ],
+        "directory": "/home/ramon/Documents/Programming/learnopengl",
+        "file": "src/glad.c"
+    },
+    {
+        "arguments": [
+            "g++",
+            "-c",
+            "--std=c++14",
+            "-Iinclude",
+            "-Iinclude/glad",
+            "-Iinclude/KHR",
+            "-o",
+            "obj/Application.o",
+            "src/Application.cpp"
+        ],
+        "directory": "/home/ramon/Documents/Programming/learnopengl",
+        "file": "src/Application.cpp"
+    }
+]
