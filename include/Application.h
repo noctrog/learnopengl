@@ -42,6 +42,9 @@ private:
 	std::unique_ptr<Shader> box_shader;
 	std::unique_ptr<Shader> light_shader;
 	glm::mat4 light_pos;
+	glm::vec3 light_color;
+	glm::mat4 box_position;
+
 	uint32_t VAO_container, VBO_container;
 	uint32_t VAO_light, VBO_light;
 	uint32_t texture, smiley_texture;

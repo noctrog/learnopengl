@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include <glm/gtc/type_ptr.hpp>
+
 Shader::Shader() : shaders{0}
 {
 	program = glCreateProgram();
@@ -118,6 +120,17 @@ void Shader::setFloat(const std::string& name, float val) const
 {
 	glUniform1f(glGetUniformLocation(program, name.c_str()), val);
 }
+
+void Shader::setVec3(const std::string& name, float r, float g, float b) const
+{
+	glUniform3f(glGetUniformLocation(program, name.c_str()), r, g, b);
+}
+
+void Shader::setVec3(const std::string& name, glm::vec3 xyz) const
+{
+	glUniform3fv(glGetUniformLocation(program, name.c_str()), 1, glm::value_ptr(xyz));
+}
+
 
 std::string Shader::readFile(const std::string& file_path)
 {
