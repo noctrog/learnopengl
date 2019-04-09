@@ -5,6 +5,7 @@
 #include <SDL2/SDL_opengl.h>
 
 #include <Shader.h>
+#include <Camera.h>
 
 namespace sdl2
 {
@@ -38,7 +39,12 @@ private:
 	sdl2::WindowPtr window;
 	sdl2::GLContextPtr glcontext;
 
-	std::unique_ptr<Shader> rendering_program;
-	uint32_t VAO, VBO, EBO;
+	std::unique_ptr<Shader> box_shader;
+	std::unique_ptr<Shader> light_shader;
+	glm::mat4 light_pos;
+	uint32_t VAO_container, VBO_container;
+	uint32_t VAO_light, VBO_light;
 	uint32_t texture, smiley_texture;
+
+	Camera camera_;
 };
