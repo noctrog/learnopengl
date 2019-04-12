@@ -223,7 +223,7 @@ void Application::render()
 
 	light_pos[3][0] = 2.0f * cos(SDL_GetTicks()/1000.0f);
 	light_pos[3][2] = 2.0f * sin(SDL_GetTicks()/1000.0f);
-	light_pos[3][1] = 0.5f + 0.2f * cos(SDL_GetTicks()/100.0f);
+	light_pos[3][1] = 0.0f + 0.2f * cos(SDL_GetTicks()/100.0f);
 
 	glm::mat4 mvp = glm::perspective(glm::radians(70.0f), 1.0f, 0.1f, 100.0f) * camera_.GetViewMatrix();
 
@@ -231,9 +231,15 @@ void Application::render()
 	box_shader->use();
 	box_shader->setInt("ourTexture", 0);
 	box_shader->setInt("smiley", 1);
-	box_shader->setVec3("lightColor", light_color);
-	box_shader->setVec3("lightPos", light_pos[3]);
 	box_shader->setVec3("viewPos", camera_.Position);
+	box_shader->setVec3("material.ambient", 0.1f, 0.1f, 0.11f);
+	box_shader->setVec3("material.diffuse", 1.0f, 1.0f, 1.00f);
+	box_shader->setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+	box_shader->setFloat("material.shininess", 32.00f);
+	box_shader->setVec3("light.position", light_pos[3]);
+	box_shader->setVec3("light.ambient", 0.1f * light_color);
+	box_shader->setVec3("light.diffuse", 0.5f * light_color);
+	box_shader->setVec3("light.specular", light_color);
 	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
 	glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(box_position));
 	glBindVertexArray(VAO_container);

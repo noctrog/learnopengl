@@ -14,7 +14,7 @@ layout (location = 0) uniform mat4 vp;
 
 void main()
 {
-    gl_Position = vp * model * vec4(aPos, 1.0);
+    gl_Position = vp * model * 4.0 * vec4(aPos, 1.0);
     TexCoord = aTexCoord;
     Normal = mat3(transpose(inverse(model))) * aNormal;
     FragPos = aPos;
