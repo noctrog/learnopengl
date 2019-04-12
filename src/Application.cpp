@@ -168,9 +168,22 @@ void Application::setup()
 	glBindTexture(GL_TEXTURE_2D, texture);
 
 	int width, height, nrChannels;
-	uint8_t* data = stbi_load("media/container.jpg", &width, &height, &nrChannels, 0);
+	stbi_set_flip_vertically_on_load(true);
+	uint8_t* data = stbi_load("media/container2.png", &width, &height, &nrChannels, 0);
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		GLenum format;
+		switch (nrChannels) {
+			case 1:
+				format = GL_RED;
+				break;
+			case 3:
+				format = GL_RGB;
+				break;
+			case 4:
+				format = GL_RGBA;
+				break;
+		}
+		glTexImage2D(GL_TEXTURE_2D, 0, format, width, height, 0, format, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
@@ -178,11 +191,10 @@ void Application::setup()
 	}
 	stbi_image_free(data);
 
-	glGenTextures(1, &smiley_texture);
+	glGenTextures(1, &specular_texture);
 	glActiveTexture(GL_TEXTURE1);
-	glBindTexture(GL_TEXTURE_2D, smiley_texture);
-	stbi_set_flip_vertically_on_load(true);
-	data = stbi_load("media/awesomeface.png", &width, &height, &nrChannels, 0);
+	glBindTexture(GL_TEXTURE_2D, specular_texture);
+	data = stbi_load("media/container2_specular.png", &width, &height, &nrChannels, 0);
 	if (data) {
 		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
@@ -229,8 +241,8 @@ void Application::render()
 
 	// Draw box
 	box_shader->use();
-	box_shader->setInt("ourTexture", 0);
-	box_shader->setInt("smiley", 1);
+	box_shader->setInt("material.diffuse", 0);
+	box_shader->setInt("material.specular", 1);
 	box_shader->setVec3("viewPos", camera_.Position);
 	box_shader->setVec3("material.ambient", 0.1f, 0.1f, 0.11f);
 	box_shader->setVec3("material.diffuse", 1.0f, 1.0f, 1.00f);
@@ -259,7 +271,7 @@ void Application::close()
 	glDeleteVertexArrays(1, &VAO_container);
 	glDeleteBuffers(1, &VBO_container);
 	glDeleteTextures(1, &texture);
-	glDeleteTextures(1, &smiley_texture);
+	glDeleteTextures(1, &specular_texture);
 }
 
 void Application::close_environment()
