@@ -221,7 +221,7 @@ void Application::setup()
 	light_shader->loadFromText("./src/shaders/light_vertex.glsl", "./src/shaders/light_fragment.glsl");
 
 	light_pos = glm::mat4(1.0f);
-	light_pos[3] = glm::vec4(2.0, 2.0, -2.0, 1.0);
+	light_pos[3] = glm::vec4(-2.0, 0.0, 2.0, 1.0);
 
 	light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
@@ -239,23 +239,39 @@ void Application::render()
 
 	glm::mat4 mvp = glm::perspective(glm::radians(70.0f), 1.0f, 0.1f, 100.0f) * camera_.GetViewMatrix();
 
+	//glm::vec3 light_dir(sin(SDL_GetTicks() * 0.001), cos(SDL_GetTicks() * 0.001), 0.0f);
 	// Draw box
 	box_shader->use();
 	box_shader->setInt("material.diffuse", 0);
 	box_shader->setInt("material.specular", 1);
 	box_shader->setVec3("viewPos", camera_.Position);
 	box_shader->setVec3("material.ambient", 0.1f, 0.1f, 0.11f);
-	box_shader->setVec3("material.diffuse", 1.0f, 1.0f, 1.00f);
+	box_shader->setVec3("material.diffuse", 1.0f, 1.0f, 1.0f);
 	box_shader->setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 	box_shader->setFloat("material.shininess", 32.00f);
 	box_shader->setVec3("light.position", light_pos[3]);
+	//box_shader->setVec3("light.direction", light_dir);
 	box_shader->setVec3("light.ambient", 0.1f * light_color);
 	box_shader->setVec3("light.diffuse", 0.5f * light_color);
 	box_shader->setVec3("light.specular", light_color);
+	box_shader->setFloat("light.constant", 1.0f);
+	box_shader->setFloat("light.linear", 0.05f);
+	box_shader->setFloat("light.quadratic", 0.04f);
+
 	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
-	glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(box_position));
+
 	glBindVertexArray(VAO_container);
-	glDrawArrays(GL_TRIANGLES, 0, 3 * 2 * 6);
+	for(int i = 0; i < 10; ++i) {
+		glm::mat4 model(1.0f);
+		model = glm::translate(model, glm::vec3(4*cos(0.5*i)*cos(1.2*i), 4*sin(0.4*i)*cos(0.12*i), 4*sin(0.5*i)*cos(0.2*i)));
+		float angle = 20 * i;
+		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+		glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(model));
+
+		glDrawArrays(GL_TRIANGLES, 0, 36);
+	}
+	//glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(box_position));
+	//glDrawArrays(GL_TRIANGLES, 0, 3 * 2 * 6);
 
 	// Draw light
 	light_shader->use();
