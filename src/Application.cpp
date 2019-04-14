@@ -96,11 +96,12 @@ void Application::setup_environment()
 	}
 	
 	glViewport(0, 0, 1000, 1000);
-	glEnable(GL_DEPTH_TEST);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
 	glEnable(GL_LINE_SMOOTH);
+	glEnable(GL_MULTISAMPLE);
+	glEnable(GL_DEPTH_TEST);
 }
 
 void Application::setup()
@@ -239,7 +240,6 @@ void Application::render()
 
 	glm::mat4 mvp = glm::perspective(glm::radians(70.0f), 1.0f, 0.1f, 100.0f) * camera_.GetViewMatrix();
 
-	//glm::vec3 light_dir(sin(SDL_GetTicks() * 0.001), cos(SDL_GetTicks() * 0.001), 0.0f);
 	// Draw box
 	box_shader->use();
 	box_shader->setInt("material.diffuse", 0);
@@ -250,22 +250,21 @@ void Application::render()
 	box_shader->setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 	box_shader->setFloat("material.shininess", 32.00f);
 	box_shader->setVec3("light.position", light_pos[3]);
-	//box_shader->setVec3("light.direction", light_dir);
 	box_shader->setVec3("light.ambient", 0.1f * light_color);
-	box_shader->setVec3("light.diffuse", 0.5f * light_color);
+	box_shader->setVec3("light.diffuse", 0.9f * light_color);
 	box_shader->setVec3("light.specular", light_color);
 	box_shader->setFloat("light.constant", 1.0f);
-	box_shader->setFloat("light.linear", 0.05f);
-	box_shader->setFloat("light.quadratic", 0.04f);
-
-	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
+	box_shader->setFloat("light.linear", 0.01f);
+	box_shader->setFloat("light.quadratic", 0.01f);
 
 	glBindVertexArray(VAO_container);
-	for(int i = 0; i < 10; ++i) {
+	for(int i = 0; i < 14; ++i) {
 		glm::mat4 model(1.0f);
-		model = glm::translate(model, glm::vec3(4*cos(0.5*i)*cos(1.2*i), 4*sin(0.4*i)*cos(0.12*i), 4*sin(0.5*i)*cos(0.2*i)));
+		model = glm::translate(model, glm::vec3(4*cos(0.5*i), 0.0f, 4*sin(0.5*i)));
 		float angle = 20 * i;
 		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+		model = glm::rotate(model, 0.0f, glm::vec3(1.0f, 0.3f, 0.5f));
+		glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
 		glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(model));
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
