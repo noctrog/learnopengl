@@ -231,6 +231,13 @@ void Application::setup()
 
 void Application::render()
 {
+	    // positions of the point lights
+	glm::vec3 pointLightPositions[] = {
+		glm::vec3( 0.7f,  0.2f,  2.0f),
+		glm::vec3( 2.3f, -3.3f, -4.0f),
+		glm::vec3(-4.0f,  2.0f, -12.0f),
+		glm::vec3( 0.0f,  0.0f, -3.0f)
+	};
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -246,16 +253,47 @@ void Application::render()
 	box_shader->setInt("material.specular", 1);
 	box_shader->setVec3("viewPos", camera_.Position);
 	box_shader->setVec3("material.ambient", 0.1f, 0.1f, 0.11f);
-	box_shader->setVec3("material.diffuse", 1.0f, 1.0f, 1.0f);
-	box_shader->setVec3("material.specular", 0.5f, 0.5f, 0.5f);
+	box_shader->setVec3("material.diffuse", 0.5f, 0.5f, 0.5f);
+	//box_shader->setVec3("material.specular", 0.5f, 0.5f, 0.5f);
 	box_shader->setFloat("material.shininess", 32.00f);
-	box_shader->setVec3("light.position", light_pos[3]);
-	box_shader->setVec3("light.ambient", 0.1f * light_color);
-	box_shader->setVec3("light.diffuse", 0.9f * light_color);
-	box_shader->setVec3("light.specular", light_color);
-	box_shader->setFloat("light.constant", 1.0f);
-	box_shader->setFloat("light.linear", 0.01f);
-	box_shader->setFloat("light.quadratic", 0.01f);
+	// directional light
+	box_shader->setVec3("dir_light.direction", 0.0f, -1.0f, 0.0f);
+	box_shader->setVec3("dir_light.ambient", 0.1f, 0.1f, 0.1f);
+	box_shader->setVec3("dir_light.diffuse", 0.2f, 0.2f, 0.2f);
+	box_shader->setVec3("dir_light.specular", 0.5f, 0.5f, 0.5f);
+	// point light 1
+        box_shader->setVec3("point_light[0].position", pointLightPositions[0]);
+        box_shader->setVec3("point_light[0].ambient", 0.05f, 0.05f, 0.05f);
+        box_shader->setVec3("point_light[0].diffuse", 0.8f, 0.8f, 0.8f);
+        box_shader->setVec3("point_light[0].specular", 1.0f, 1.0f, 1.0f);
+        box_shader->setFloat("point_light[0].constant", 1.0f);
+        box_shader->setFloat("point_light[0].linear", 0.09);
+        box_shader->setFloat("point_light[0].quadratic", 0.032);
+        // point light 2
+        box_shader->setVec3("point_light[1].position", pointLightPositions[1]);
+        box_shader->setVec3("point_light[1].ambient", 0.05f, 0.05f, 0.05f);
+        box_shader->setVec3("point_light[1].diffuse", 0.8f, 0.8f, 0.8f);
+        box_shader->setVec3("point_light[1].specular", 1.0f, 1.0f, 1.0f);
+        box_shader->setFloat("point_light[1].constant", 1.0f);
+        box_shader->setFloat("point_light[1].linear", 0.09);
+        box_shader->setFloat("point_light[1].quadratic", 0.032);
+        // point light 3
+        box_shader->setVec3("point_light[2].position", pointLightPositions[2]);
+        box_shader->setVec3("point_light[2].ambient", 0.05f, 0.05f, 0.05f);
+        box_shader->setVec3("point_light[2].diffuse", 0.8f, 0.8f, 0.8f);
+        box_shader->setVec3("point_light[2].specular", 1.0f, 1.0f, 1.0f);
+        box_shader->setFloat("point_light[2].constant", 1.0f);
+        box_shader->setFloat("point_light[2].linear", 0.09);
+        box_shader->setFloat("point_light[2].quadratic", 0.032);
+        // point light 4
+        box_shader->setVec3("point_light[3].position", pointLightPositions[3]);
+        box_shader->setVec3("point_light[3].ambient", 0.05f, 0.05f, 0.05f);
+        box_shader->setVec3("point_light[3].diffuse", 0.8f, 0.8f, 0.8f);
+        box_shader->setVec3("point_light[3].specular", 1.0f, 1.0f, 1.0f);
+        box_shader->setFloat("point_light[3].constant", 1.0f);
+        box_shader->setFloat("point_light[3].linear", 0.09);
+        box_shader->setFloat("point_light[3].quadratic", 0.032);
+	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
 
 	glBindVertexArray(VAO_container);
 	for(int i = 0; i < 14; ++i) {
@@ -264,21 +302,21 @@ void Application::render()
 		float angle = 20 * i;
 		model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
 		model = glm::rotate(model, 0.0f, glm::vec3(1.0f, 0.3f, 0.5f));
-		glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
 		glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(model));
 
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
-	//glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(box_position));
-	//glDrawArrays(GL_TRIANGLES, 0, 3 * 2 * 6);
 
 	// Draw light
 	light_shader->use();
-	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
-	glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(light_pos));
-	light_shader->setVec3("lightColor", light_color);
-	glBindVertexArray(VAO_light);
-	glDrawArrays(GL_TRIANGLES, 0, 3 * 2 * 6);
+	for (int i = 0; i < 4; ++i) {
+		light_pos[3] = glm::vec4(pointLightPositions[i], 1.0f);
+		glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
+		glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(light_pos));
+		light_shader->setVec3("lightColor", light_color);
+		glBindVertexArray(VAO_light);
+		glDrawArrays(GL_TRIANGLES, 0, 3 * 2 * 6);
+	}
 }
 
 void Application::close()
