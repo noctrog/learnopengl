@@ -7,7 +7,7 @@ OBJDIR		 = obj
 
 CFLAGS		 = 
 CXXFLAGS	+= --std=c++14 -g
-LDFLAGS		+= -ldl -lGL -lSDL2
+LDFLAGS		+= -ldl -lGL -lSDL2 -lassimp
 INCLUDE 	+= -I$(INCDIR) -I$(INCDIR)/glad -I$(INCDIR)/KHR
 
 CXX_SRC		 = $(wildcard $(SRCDIR)/*.cpp)

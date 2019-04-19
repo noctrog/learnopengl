@@ -6,6 +6,7 @@
 
 #include <Shader.h>
 #include <Camera.h>
+#include <Model.h>
 
 namespace sdl2
 {
@@ -41,6 +42,8 @@ private:
 
 	std::unique_ptr<Shader> box_shader;
 	std::unique_ptr<Shader> light_shader;
+	std::unique_ptr<Shader> nano_shader;
+	std::unique_ptr<Model> nanosuit;
 	glm::mat4 light_pos;
 	glm::vec3 light_color;
 	glm::mat4 box_position;
@@ -50,4 +53,5 @@ private:
 	uint32_t texture, specular_texture;
 
 	Camera camera_;
+
 };
