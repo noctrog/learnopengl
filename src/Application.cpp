@@ -219,6 +219,9 @@ void Application::setup()
 	glEnableVertexAttribArray(0);
 	glBindVertexArray(0);
 
+	nano_shader = std::make_unique<Shader>();
+	nano_shader->loadFromText("./src/shaders/vertex.glsl", "./src/shaders/nanosuit_fragment.glsl");
+
 	light_shader = std::make_unique<Shader>();
 	light_shader->loadFromText("./src/shaders/light_vertex.glsl", "./src/shaders/light_fragment.glsl");
 
@@ -228,9 +231,6 @@ void Application::setup()
 	light_color = glm::vec3(1.0f, 1.0f, 1.0f);
 
 	box_position = glm::mat4(1.0f);
-
-	nano_shader = std::make_unique<Shader>();
-	nano_shader->loadFromText("./src/shaders/vertex.glsl", "./src/shaders/nanosuit_fragment.glsl");
 
 	nanosuit = std::make_unique<Model>("./media/nanosuit/nanosuit.obj");
 }
@@ -253,54 +253,73 @@ void Application::render()
 
 	glm::mat4 mvp = glm::perspective(glm::radians(70.0f), 1.0f, 0.1f, 100.0f) * camera_.GetViewMatrix();
 
+	// Draw nanosuit 
+	box_shader->use();
+	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
+	glm::mat4 nano_model = glm::mat4(1.0f);
+	nano_model = glm::translate(nano_model, glm::vec3(0.0f, -1.75f, 0.0f));
+	nano_model = glm::scale(nano_model, glm::vec3(0.2f));
+	glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(nano_model));
+	nanosuit->draw(box_shader);
+
+	nano_shader->use();
+	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
+	nano_model = glm::mat4(1.0f);
+	nano_model = glm::translate(nano_model, glm::vec3(2.0f, -1.75f, 0.0f));
+	nano_model = glm::scale(nano_model, glm::vec3(0.2f));
+	glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(nano_model));
+	nanosuit->draw(nano_shader);
+
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, texture);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, specular_texture);
+
+
 	// Draw box
 	box_shader->use();
 	box_shader->setInt("material.diffuse", 0);
 	box_shader->setInt("material.specular", 1);
 	box_shader->setVec3("viewPos", camera_.Position);
 	box_shader->setVec3("material.ambient", 0.1f, 0.1f, 0.11f);
-	box_shader->setFloat("material.shininess", 64.00f);
+	box_shader->setFloat("material.shininess", 1024.00f);
 	// directional light
 	box_shader->setVec3("dir_light.direction", 0.0f, -1.0f, 0.0f);
 	box_shader->setVec3("dir_light.ambient", 0.1f, 0.1f, 0.1f);
 	box_shader->setVec3("dir_light.diffuse", 0.2f, 0.2f, 0.2f);
 	box_shader->setVec3("dir_light.specular", 0.5f, 0.5f, 0.5f);
 	// point light 1
-        box_shader->setVec3("point_light[0].position", pointLightPositions[0]);
-        box_shader->setVec3("point_light[0].ambient", 0.05f, 0.05f, 0.05f);
-        box_shader->setVec3("point_light[0].diffuse", 0.8f, 0.8f, 0.8f);
-        box_shader->setVec3("point_light[0].specular", 1.0f, 1.0f, 1.0f);
-        box_shader->setFloat("point_light[0].constant", 1.0f);
-        box_shader->setFloat("point_light[0].linear", 0.09);
-        box_shader->setFloat("point_light[0].quadratic", 0.032);
-        // point light 2
-        box_shader->setVec3("point_light[1].position", pointLightPositions[1]);
-        box_shader->setVec3("point_light[1].ambient", 0.05f, 0.05f, 0.05f);
-        box_shader->setVec3("point_light[1].diffuse", 0.8f, 0.8f, 0.8f);
-        box_shader->setVec3("point_light[1].specular", 1.0f, 1.0f, 1.0f);
-        box_shader->setFloat("point_light[1].constant", 1.0f);
-        box_shader->setFloat("point_light[1].linear", 0.09);
-        box_shader->setFloat("point_light[1].quadratic", 0.032);
-        // point light 3
-        box_shader->setVec3("point_light[2].position", pointLightPositions[2]);
-        box_shader->setVec3("point_light[2].ambient", 0.05f, 0.05f, 0.05f);
-        box_shader->setVec3("point_light[2].diffuse", 0.8f, 0.8f, 0.8f);
-        box_shader->setVec3("point_light[2].specular", 1.0f, 1.0f, 1.0f);
-        box_shader->setFloat("point_light[2].constant", 1.0f);
-        box_shader->setFloat("point_light[2].linear", 0.09);
-        box_shader->setFloat("point_light[2].quadratic", 0.032);
-        // point light 4
-        box_shader->setVec3("point_light[3].position", pointLightPositions[3]);
-        box_shader->setVec3("point_light[3].ambient", 0.05f, 0.05f, 0.05f);
-        box_shader->setVec3("point_light[3].diffuse", 0.8f, 0.8f, 0.8f);
-        box_shader->setVec3("point_light[3].specular", 1.0f, 1.0f, 1.0f);
-        box_shader->setFloat("point_light[3].constant", 1.0f);
-        box_shader->setFloat("point_light[3].linear", 0.09);
-        box_shader->setFloat("point_light[3].quadratic", 0.032);
+	box_shader->setVec3("point_light[0].position", pointLightPositions[0]);
+	box_shader->setVec3("point_light[0].ambient", 0.05f, 0.05f, 0.05f);
+	box_shader->setVec3("point_light[0].diffuse", 0.8f, 0.8f, 0.8f);
+	box_shader->setVec3("point_light[0].specular", 1.0f, 1.0f, 1.0f);
+	box_shader->setFloat("point_light[0].constant", 1.0f);
+	box_shader->setFloat("point_light[0].linear", 0.09);
+	box_shader->setFloat("point_light[0].quadratic", 0.032);
+	// point light 2
+	box_shader->setVec3("point_light[1].position", pointLightPositions[1]);
+	box_shader->setVec3("point_light[1].ambient", 0.05f, 0.05f, 0.05f);
+	box_shader->setVec3("point_light[1].diffuse", 0.8f, 0.8f, 0.8f);
+	box_shader->setVec3("point_light[1].specular", 1.0f, 1.0f, 1.0f);
+	box_shader->setFloat("point_light[1].constant", 1.0f);
+	box_shader->setFloat("point_light[1].linear", 0.09);
+	box_shader->setFloat("point_light[1].quadratic", 0.032);
+	// point light 3
+	box_shader->setVec3("point_light[2].position", pointLightPositions[2]);
+	box_shader->setVec3("point_light[2].ambient", 0.05f, 0.05f, 0.05f);
+	box_shader->setVec3("point_light[2].diffuse", 0.8f, 0.8f, 0.8f);
+	box_shader->setVec3("point_light[2].specular", 1.0f, 1.0f, 1.0f);
+	box_shader->setFloat("point_light[2].constant", 1.0f);
+	box_shader->setFloat("point_light[2].linear", 0.09);
+	box_shader->setFloat("point_light[2].quadratic", 0.032);
+	// point light 4
+	box_shader->setVec3("point_light[3].position", pointLightPositions[3]);
+	box_shader->setVec3("point_light[3].ambient", 0.05f, 0.05f, 0.05f);
+	box_shader->setVec3("point_light[3].diffuse", 0.8f, 0.8f, 0.8f);
+	box_shader->setVec3("point_light[3].specular", 1.0f, 1.0f, 1.0f);
+	box_shader->setFloat("point_light[3].constant", 1.0f);
+	box_shader->setFloat("point_light[3].linear", 0.09);
+	box_shader->setFloat("point_light[3].quadratic", 0.032);
 	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
 
 	glBindVertexArray(VAO_container);
@@ -315,15 +334,6 @@ void Application::render()
 		glDrawArrays(GL_TRIANGLES, 0, 36);
 	}
 
-	// Draw nanosuit 
-	//nano_shader->use();
-	nano_shader->setInt("texture_diffuse1", 0);
-	glUniformMatrix4fv(0, 1, GL_FALSE, glm::value_ptr(mvp));
-	glm::mat4 nano_model = glm::mat4(1.0f);
-	nano_model = glm::translate(nano_model, glm::vec3(0.0f, -1.75f, 0.0f));
-	nano_model = glm::scale(nano_model, glm::vec3(0.2f));
-	glUniformMatrix4fv(1, 1, GL_FALSE, glm::value_ptr(nano_model));
-	nanosuit->draw(*nano_shader.get());
 
 	// Draw light
 	light_shader->use();

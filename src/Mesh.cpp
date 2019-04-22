@@ -46,14 +46,16 @@ void Mesh::setup_mesh()
     glBindVertexArray(0);
 }
 
-void Mesh::draw(Shader shader)
+void Mesh::draw(std::unique_ptr<Shader> const& shader)
 {
+	shader->use();
 	uint32_t diffuseNr = 1;
 	uint32_t specularNr = 1;
 	uint32_t normalNr = 1;
 	uint32_t heightNr = 1;
 
-	for (int i = 0; i < textures.size(); ++i) {
+	int i;
+	for (i = 0; i < textures.size(); ++i) {
 		glActiveTexture(GL_TEXTURE0 + i);
 
 		std::string number;
@@ -71,7 +73,7 @@ void Mesh::draw(Shader shader)
 			number = std::to_string(heightNr++);
 		}
 
-		shader.setInt((name + number).c_str(), i);
+		shader->setInt((name + number).c_str(), i);
 		glBindTexture(GL_TEXTURE_2D, textures[i].id);
 	}
 
@@ -79,4 +81,6 @@ void Mesh::draw(Shader shader)
 	glBindVertexArray(VAO);
 	glDrawElements(GL_TRIANGLES, indices.size(), GL_UNSIGNED_INT, 0);
 	glBindVertexArray(0);
+
+	glActiveTexture(GL_TEXTURE0);
 }

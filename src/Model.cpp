@@ -58,7 +58,7 @@ Model::~Model()
 
 }
 
-void Model::draw(Shader shader)
+void Model::draw(std::unique_ptr<Shader> const& shader)
 {
 	for (auto mesh : meshes) {
 		mesh.draw(shader);
@@ -158,11 +158,22 @@ std::vector<Texture> Model::load_material_textures(aiMaterial *mat, aiTextureTyp
 	for(uint32_t i = 0; i < mat->GetTextureCount(type); ++i) {
 		aiString str;
 		mat->GetTexture(type, i, &str);
-		Texture texture;
-		texture.id = TextureFromFile(str.C_Str(), directory);
-		texture.type = typeName;
-		texture.path = str.C_Str();
-		textures.push_back(texture);
+		bool skip = false;
+		for (auto texture : textures_loaded) {
+			if (std::strcmp(texture.path.data(), str.C_Str()) == 0) {
+				textures.push_back(texture);
+				skip = true;
+				break;
+			}
+		}
+
+		if (!skip) {
+			Texture texture;
+			texture.id = TextureFromFile(str.C_Str(), directory);
+			texture.type = typeName;
+			texture.path = str.C_Str();
+			textures.push_back(texture);
+		}
 	}
 
 	return textures;

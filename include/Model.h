@@ -2,6 +2,7 @@
 
 #include <vector>
 #include <string>
+#include <memory>
 
 #include <Shader.h>
 #include <Mesh.h>
@@ -16,11 +17,12 @@ public:
 	Model (const char* path);
 	virtual ~Model ();
 
-	void draw(Shader shader);
+	void draw(std::unique_ptr<Shader> const& shader);
 private:
 	/* Model data */
 	std::vector<Mesh> meshes;
 	std::string directory;
+	std::vector<Texture> textures_loaded;
 
 	void load_model(const std::string& path);
 	void process_node(aiNode *node, const aiScene *scene);

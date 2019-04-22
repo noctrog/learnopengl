@@ -94,4 +94,5 @@ void main()
 		result += calc_point_light(point_light[i], norm, FragPos, viewDir);
 	}
 	FragColor = vec4(result, 1.0);
+	
 }

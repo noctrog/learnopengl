@@ -99,6 +99,8 @@ void Shader::link()
 		std::string error_string(error_log.begin(), error_log.end());
 		throw std::runtime_error(error_string);
 	}
+
+	deleteShaders();
 } 
 
 void Shader::deleteShaders()

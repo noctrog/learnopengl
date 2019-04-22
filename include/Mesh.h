@@ -2,6 +2,7 @@
 
 #include <string>
 #include <vector>
+#include <memory>
 #include <inttypes.h>
 
 #include <glm/glm.hpp>
@@ -28,7 +29,7 @@ public:
 	Mesh (std::vector<Vertex> vertices, std::vector<uint32_t> indices, std::vector<Texture> textures);
 	virtual ~Mesh ();
 
-	void draw(Shader shader);
+	void draw(std::unique_ptr<Shader> const& shader);
 
 private:
 	uint32_t VAO, VBO, EBO;
