@@ -50,7 +50,8 @@ private:
 
 	uint32_t VAO_container, VBO_container;
 	uint32_t VAO_light, VBO_light;
-	uint32_t texture, specular_texture;
+	uint32_t VAO_floor, VBO_floor, EBO_floor;
+	uint32_t texture, specular_texture, floor_diffuse, floor_specular;
 
 	Camera camera_;
 
