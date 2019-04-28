@@ -77,10 +77,11 @@ void Application::setup_environment()
 	SDL_GL_SetAttribute(SDL_GL_CONTEXT_PROFILE_MASK, SDL_GL_CONTEXT_PROFILE_CORE);
 	SDL_GL_SetAttribute(SDL_GL_DEPTH_SIZE, 24);
 	SDL_GL_SetAttribute(SDL_GL_DOUBLEBUFFER, 1);
-	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 4);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLEBUFFERS, 1);
+	SDL_GL_SetAttribute(SDL_GL_MULTISAMPLESAMPLES, 8);
 	//SDL_GL_SetAttribute(SDL_GL_CONTEXT_FLAGS, SDL_GL_CONTEXT_DEBUG_FLAG);
 	
-	window.reset(SDL_CreateWindow("GL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1000, 1000, SDL_WINDOW_OPENGL));
+	window.reset(SDL_CreateWindow("GL", SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, 1920, 1080, SDL_WINDOW_FULLSCREEN_DESKTOP | SDL_WINDOW_OPENGL));
 	if (window == nullptr) {
 		throw std::runtime_error(SDL_GetError());
 	}
@@ -96,7 +97,7 @@ void Application::setup_environment()
 		exit(-1);
 	}
 	
-	glViewport(0, 0, 1000, 1000);
+	glViewport(0, 0, 1920, 1080);
 
 	glEnable(GL_BLEND);
 	glBlendFunc(GL_SRC_ALPHA, GL_ONE_MINUS_SRC_ALPHA);
@@ -284,17 +285,15 @@ void Application::setup()
 	glGenTextures(1, &floor_specular);
 	glActiveTexture(GL_TEXTURE1);
 	glBindTexture(GL_TEXTURE_2D, floor_specular);
-	data = stbi_load("./media/paving01s.jpg", &width, &height, &nrChannels, 0);
+	data = stbi_load("./media/paving01m.jpg", &width, &height, &nrChannels, 0);
 	if (data) {
-		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, data);
 		glGenerateMipmap(GL_TEXTURE_2D);
 	}
 	else {
-		std::cout << "Failed to load image" << std::endl;
+		std::cout << "Failed to load iasdasdas" << std::endl;
 	}
 	stbi_image_free(data);
-	//data = NULL;
-	//data = stbi_load("./media/wall.jpg", &width, &height, &nrChannels, 4);
 }
 
 void Application::render()
@@ -313,7 +312,7 @@ void Application::render()
 	light_pos[3][2] = 2.0f * sin(SDL_GetTicks()/1000.0f);
 	light_pos[3][1] = 0.0f + 0.2f * cos(SDL_GetTicks()/100.0f);
 
-	glm::mat4 mvp = glm::perspective(glm::radians(70.0f), 1.0f, 0.1f, 100.0f) * camera_.GetViewMatrix();
+	glm::mat4 mvp = glm::perspective(glm::radians(70.0f), 1920.0f/1080.0f, 0.1f, 100.0f) * camera_.GetViewMatrix();
 
 	// Draw nanosuit 
 	box_shader->use();
