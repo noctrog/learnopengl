@@ -20,6 +20,8 @@ namespace sdl2
 	using GLContextPtr = std::unique_ptr<SDL_GLContext, SDL_Deleter>;
 }
 
+uint32_t load_cubemap(const std::vector<std::string>& faces);
+
 class Application
 {
 public:
@@ -43,6 +45,9 @@ private:
 	std::unique_ptr<Shader> box_shader;
 	std::unique_ptr<Shader> light_shader;
 	std::unique_ptr<Shader> nano_shader;
+	std::unique_ptr<Shader> reflect_shader;
+	std::unique_ptr<Shader> cubemap_shader;
+	std::unique_ptr<Shader> postprocess_shader;
 	std::unique_ptr<Model> nanosuit;
 	glm::mat4 light_pos;
 	glm::vec3 light_color;
@@ -52,6 +57,11 @@ private:
 	uint32_t VAO_light, VBO_light;
 	uint32_t VAO_floor, VBO_floor, EBO_floor;
 	uint32_t texture, specular_texture, floor_diffuse, floor_specular;
+
+	uint32_t fbo, tex_color_buffer, rbo;
+	uint32_t VAO_quad, VBO_quad;
+
+	uint32_t VAO_cubemap, VBO_cubemap, texture_cubemap;
 
 	Camera camera_;
 
