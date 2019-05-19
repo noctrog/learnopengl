@@ -133,6 +133,10 @@ void Shader::setVec3(const std::string& name, glm::vec3 xyz) const
 	glUniform3fv(glGetUniformLocation(program, name.c_str()), 1, glm::value_ptr(xyz));
 }
 
+void Shader::setMat4(const std::string& name, glm::mat4 mat) const
+{
+	glUniformMatrix4fv(glGetUniformLocation(program, name.c_str()), 1, GL_FALSE, glm::value_ptr(mat));
+}
 
 std::string Shader::readFile(const std::string& file_path)
 {
