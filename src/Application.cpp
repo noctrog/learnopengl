@@ -332,27 +332,16 @@ void Application::setup()
 
 
 	// post process framebuffer setup
-	glGenFramebuffers(1, &fbo);
-	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
-
-	glGenTextures(1, &tex_color_buffer);
-	glBindTexture(GL_TEXTURE_2D, tex_color_buffer);
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, 1920, 1080, 0, GL_RGB, GL_UNSIGNED_BYTE, NULL);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_R, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_BORDER);
-	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_BORDER);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	glFramebufferTexture2D(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, GL_TEXTURE_2D, tex_color_buffer, 0);
-
+	glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &color_ms_tex);
+	glTextureStorage2DMultisample(color_ms_tex, 4, GL_RGBA8, 1920, 1080, GL_TRUE);
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
-	glRenderbufferStorage(GL_RENDERBUFFER, GL_DEPTH24_STENCIL8, 1920, 1080);
-	glBindRenderbuffer(GL_RENDERBUFFER, 0);
+	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, 1920, 1080);
 
-	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_STENCIL_ATTACHMENT, GL_RENDERBUFFER, rbo);
+	glGenFramebuffers(1, &fbo);
+	glBindFramebuffer(GL_FRAMEBUFFER, fbo);
+	glFramebufferTexture(GL_FRAMEBUFFER, GL_COLOR_ATTACHMENT0, color_ms_tex, 0);
+	glFramebufferRenderbuffer(GL_FRAMEBUFFER, GL_DEPTH_ATTACHMENT, GL_RENDERBUFFER, rbo);
 
 	if (glCheckFramebufferStatus(GL_FRAMEBUFFER) != GL_FRAMEBUFFER_COMPLETE) {
 		std::cout << "ERROR::FRAMEBUFFER:: Framebuffer is not complete" << std::endl;
@@ -598,7 +587,7 @@ void Application::render()
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glActiveTexture(GL_TEXTURE0);
-	glBindTexture(GL_TEXTURE_2D, tex_color_buffer);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, color_ms_tex);
 	postprocess_shader->use();
 	postprocess_shader->setInt("screen_texture", 0);
 	glBindVertexArray(VAO_quad);
@@ -617,7 +606,7 @@ void Application::close()
 	glDeleteBuffers(1, &VBO_quad);
 	glDeleteTextures(1, &texture);
 	glDeleteTextures(1, &specular_texture);
-	glDeleteTextures(1, &tex_color_buffer);
+	glDeleteTextures(1, &color_ms_tex);
 }
 
 void Application::close_environment()

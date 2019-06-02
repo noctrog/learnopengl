@@ -1,16 +1,25 @@
 #version 450 core
 
-out vec4 FragColor;
+layout(location = 0) out vec4 FragColor;
 
 in vec2 TexCoords;
 
-uniform sampler2D screen_texture;
+uniform sampler2DMS screen_texture;
 
 const float offset = 1.0 / 1000.0f;
 
 void main(void)
 {
-	FragColor = texture(screen_texture, TexCoords);
+	ivec2 coord = ivec2(gl_FragCoord.xy);
+	vec4 result = vec4(0.0);
+	int i;
+
+	for (i = 0; i < 4; ++i) {
+		result += texelFetch(screen_texture, coord, i);
+	}
+	result = result / 4;
+
+	FragColor = result;
 }
 
 //void main(void)
