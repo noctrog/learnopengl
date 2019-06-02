@@ -332,8 +332,11 @@ void Application::setup()
 
 
 	// post process framebuffer setup
-	glCreateTextures(GL_TEXTURE_2D_MULTISAMPLE, 1, &color_ms_tex);
-	glTextureStorage2DMultisample(color_ms_tex, 4, GL_RGBA8, 1920, 1080, GL_TRUE);
+
+	glGenTextures(1, &color_ms_tex);
+	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, color_ms_tex);
+	glTexImage2DMultisample(GL_TEXTURE_2D_MULTISAMPLE, 4, GL_RGBA, 1920, 1080, GL_TRUE);
+
 	glGenRenderbuffers(1, &rbo);
 	glBindRenderbuffer(GL_RENDERBUFFER, rbo);
 	glRenderbufferStorageMultisample(GL_RENDERBUFFER, 4, GL_DEPTH_COMPONENT, 1920, 1080);
