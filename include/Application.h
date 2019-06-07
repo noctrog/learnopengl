@@ -59,7 +59,6 @@ private:
 	uint32_t texture, specular_texture, floor_diffuse, floor_specular;
 
 	uint32_t fbo, color_ms_tex, depth_ms_tex, rbo;
-	uint32_t VAO_quad, VBO_quad;
 
 	uint32_t VAO_cubemap, VBO_cubemap, texture_cubemap;
 

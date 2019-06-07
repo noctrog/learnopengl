@@ -354,28 +354,6 @@ void Application::setup()
 	postprocess_shader = std::make_unique<Shader>("./src/shaders/postprocess_vertex.glsl", 
 						      "./src/shaders/postprocess_fragment.glsl");
 
-	const static float quad[] = {
-		-1.0f,  1.0f, 0.0f, 1.0f,
-		-1.0f, -1.0f, 0.0f, 0.0f,
-		 1.0f,  1.0f, 1.0f, 1.0f,
-		 1.0f,  1.0f, 1.0f, 1.0f,
-		-1.0f, -1.0f, 0.0f, 0.0f,
-		 1.0f, -1.0f, 1.0f, 0.0f
-	};
-
-	glGenVertexArrays(1, &VAO_quad);
-	glBindVertexArray(VAO_quad);
-	
-	glGenBuffers(1, &VBO_quad);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO_quad);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(quad), quad, GL_STATIC_DRAW);
-	glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 4 * sizeof(float), (void*)(2 * sizeof(float)));
-	glEnableVertexAttribArray(1);
-
-	glBindVertexArray(0);
-
 	// load cubemap
 	const static std::vector<std::string> faces
 	{
@@ -593,7 +571,6 @@ void Application::render()
 	glBindTexture(GL_TEXTURE_2D_MULTISAMPLE, color_ms_tex);
 	postprocess_shader->use();
 	postprocess_shader->setInt("screen_texture", 0);
-	glBindVertexArray(VAO_quad);
 	glDrawArrays(GL_TRIANGLES, 0, 6);
 }
 
@@ -601,12 +578,10 @@ void Application::close()
 {
 	glDeleteVertexArrays(1, &VAO_container);
 	glDeleteVertexArrays(1, &VAO_floor);
-	glDeleteVertexArrays(1, &VAO_quad);
 	glDeleteVertexArrays(1, &VAO_light);
 	glDeleteBuffers(1, &VBO_container);
 	glDeleteBuffers(1, &VBO_floor);
 	glDeleteBuffers(1, &VBO_light);
-	glDeleteBuffers(1, &VBO_quad);
 	glDeleteTextures(1, &texture);
 	glDeleteTextures(1, &specular_texture);
 	glDeleteTextures(1, &color_ms_tex);

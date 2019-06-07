@@ -1,12 +1,15 @@
 #version 450 core
 
-layout (location = 0) in vec2 aPos;
-layout (location = 1) in vec2 aTexCoords;
-
-out vec2 TexCoords;
-
 void main (void)
 {
-	gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
-	TexCoords = aTexCoords;
+	const vec2 positions[] = {
+		vec2(-1.0f, 1.0f),
+		vec2(-1.0f,-1.0f),
+		vec2( 1.0f, 1.0f),
+		vec2( 1.0f, 1.0f),
+		vec2(-1.0f,-1.0f),
+		vec2( 1.0f,-1.0f)
+	};
+
+	gl_Position = vec4(positions[gl_VertexID], 0.0, 1.0);
 }
